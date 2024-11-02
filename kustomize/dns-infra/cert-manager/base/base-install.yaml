@@ -1,0 +1,17 @@
+global:
+  rbac:
+    create: true
+  leaderElection:
+    namespace: "dns-infra"
+
+
+serviceAccount:
+  create: true
+  annotations: 
+    iam.gke.io/gcp-service-account: cert-manager@${PROJECT_ID}.iam.gserviceaccount.com
+
+installCRDs: true
+
+extraArgs:
+  # This is required to use workload identity
+  - --cluster-issuer-ambient-credentials=true

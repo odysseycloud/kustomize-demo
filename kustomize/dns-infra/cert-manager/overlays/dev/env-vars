@@ -1,0 +1,7 @@
+PROJECT_ID=kustomize-demo
+SA_EMAIL=cert-manager@kustomize-demo.iam.gserviceaccount.com
+WOKLOAD_IDENTITY=kustomize-demo.svc.id.goog[dns-infra/cert-manager]
+DEPLOY_ENV=dev
+CLUSTER_NAME=kustomize-demo
+SECRET=<path:dev
+REGION=syd

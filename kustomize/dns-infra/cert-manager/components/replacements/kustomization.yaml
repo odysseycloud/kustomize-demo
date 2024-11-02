@@ -1,0 +1,103 @@
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+
+replacements:
+- source: 
+    kind: ConfigMap
+    name: cert-manager-env-vars
+    fieldPath: data.PROJECT_ID
+  targets:
+  - select:
+      name: cert-manager
+      kind: IAMServiceAccount
+    fieldPaths:
+    - metadata.annotations.[cnrm.cloud.google.com/project-id]
+  - select:
+      name: cert.manager
+      kind: IAMCustomRole
+    fieldPaths:
+    - metadata.annotations.[cnrm.cloud.google.com/project-id]
+  - select:
+      name: cert-manager-role-binding
+      kind: IAMPolicyMember
+    fieldPaths:
+    - spec.resourceRef.external
+    options:
+      delimiter: "/"
+      index: 1      
+  - select:
+      name: cert-manager-role-binding
+      kind: IAMPolicyMember
+    fieldPaths:
+    - spec.role
+    options:
+      delimiter: "/"
+      index: 1  
+
+- source: 
+    kind: ConfigMap
+    name: cert-manager-env-vars
+    fieldPath: data.DEPLOY_ENV
+  targets:
+  - select:
+      name: vault-cert-manager
+      kind: SecretStore
+    fieldPaths:
+    - spec.provider.vault.path
+  - select:
+      name: vault-cert-manager
+      kind: SecretStore
+    fieldPaths:
+    - spec.provider.vault.auth.kubernetes.mountPath
+    options:
+      delimiter: "-"
+      index: 1  
+  - select:
+      name: vault-dns-infra-cert-manager-cf-api-token
+      kind: ExternalSecret
+    fieldPaths:
+    - spec.data.[secretKey=api-token].remoteRef.key
+    options:
+      delimiter: "/"
+      index: 0
+  - select:
+      kind: ClusterIssuer
+    fieldPaths:
+    - metadata.name
+    - spec.acme.privateKeySecretRef.name
+    options:
+      delimiter: "-"
+      index: 1
+
+- source: 
+    kind: ConfigMap
+    name: cert-manager-env-vars
+    fieldPath: data.SA_EMAIL
+  targets:     
+  - select:
+      name: cert-manager 
+      kind: ServiceAccount
+    fieldPaths:
+    - metadata.annotations.[iam.gke.io/gcp-service-account]
+  - select:
+      name: cert-manager-role-binding
+      kind: IAMPolicyMember
+    fieldPaths:
+    - spec.member
+    options:
+      delimiter: ":"
+      index: 1         
+
+- source: 
+    kind: ConfigMap
+    name: cert-manager-env-vars
+    fieldPath: data.WOKLOAD_IDENTITY
+  targets:     
+  - select:
+      name: cert-manager-workload-identity
+      kind: IAMPolicyMember
+    fieldPaths:
+    - spec.member
+    options:
+      delimiter: ":"
+      index: 1

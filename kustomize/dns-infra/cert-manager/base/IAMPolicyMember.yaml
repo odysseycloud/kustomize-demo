@@ -1,0 +1,26 @@
+apiVersion: iam.cnrm.cloud.google.com/v1beta1
+kind: IAMPolicyMember
+metadata:
+  name: cert-manager-workload-identity
+spec:
+  member: serviceAccount:${PROJECT_ID}.svc.id.goog[dns-infra/cert-manager]
+  role: roles/iam.workloadIdentityUser
+  resourceRef:
+    apiVersion: iam.cnrm.cloud.google.com/v1beta1
+    kind: IAMServiceAccount
+    name: cert-manager
+
+---
+
+apiVersion: iam.cnrm.cloud.google.com/v1beta1
+kind: IAMPolicyMember
+metadata:
+  name: cert-manager-role-binding
+spec:
+  member: serviceAccount:cert-manager@${PROJECT_ID}.iam.gserviceaccount.com
+  role: projects/${PROJECT_ID}/roles/cert.manager
+  resourceRef:
+    apiVersion: resourcemanager.cnrm.cloud.google.com/v1beta1
+    kind: Project
+    external: projects/${PROJECT_ID}
+  
